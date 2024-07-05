@@ -69,7 +69,7 @@ public class BankAccount {
                 if (amount <= balance) {
                     balance -= amount;
 
-                    addTransaction(new Transaction(accountID, "Withdrew $" + (float)amount/100 + " into account " + accountID));
+                    addTransaction(new Transaction(accountID, "Withdrew $" + (float)amount/100 + " out of account " + accountID));
 
                     AccountDAO dao = new AccountDAO();
                     AccountService service = new AccountService(dao);
@@ -133,6 +133,12 @@ public class BankAccount {
             System.out.println("You can only delete an account with $0 balance! \n You currently have: $" + balance);
             return false;
         }
+
+        AccountDAO dao = new AccountDAO();
+        AccountService service = new AccountService(dao);
+
+        service.deleteAccount(this);
+
         return true;
     }
 
@@ -151,8 +157,9 @@ public class BankAccount {
 
     //View transaction history
     public void viewTransactionHistory() {
+        System.out.println("TRANSACTION HISTORY: ");
         for (int i = 0; i < transactionHistory.size(); i++) {
-            System.out.println(transactionHistory.get(i));
+            System.out.println(i + ". " + transactionHistory.get(i));
         }
     }
 

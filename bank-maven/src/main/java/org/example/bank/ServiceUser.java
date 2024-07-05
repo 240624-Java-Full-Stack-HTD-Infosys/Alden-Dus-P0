@@ -12,7 +12,7 @@ public class ServiceUser {
 
     public User login(String info, String password) {
         User u = findUser(info);
-
+        if (u == null) return null;
         if (password.equals(u.getPassword())) return u;
 
         else return null;
@@ -40,7 +40,7 @@ public class ServiceUser {
     //Delete user by id
     public void deleteUser(User u) {
         //Delete from DB
-        deleteUser(u);
+        dao.deleteUser(u);
     }
 
     public void updateUser(User u) {

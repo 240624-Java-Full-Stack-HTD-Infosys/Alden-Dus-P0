@@ -114,4 +114,8 @@ public class User {
         this.userID = userID;
     }
 
+    public void deleteAccount(int acc) {
+        accountList.get(acc).deleteAccount();
+        accountList.remove(acc);
+    }
 }

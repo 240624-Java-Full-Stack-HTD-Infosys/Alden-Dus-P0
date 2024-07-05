@@ -148,7 +148,10 @@ public class Main {
         List<BankAccount> accounts = u.getAccountList();
 
         for (int i = 0; i < accounts.size(); i++) {
-            System.out.println(i + ": " + accounts.get(i));
+            System.out.println("--------------------");
+            System.out.println("Press to access: " + i);
+            System.out.println(accounts.get(i));
+            System.out.println("");
         }
 
         System.out.printf("Enter what account you want to use: ");
@@ -202,9 +205,10 @@ public class Main {
         }
         else if (command.equalsIgnoreCase("history") || command.equalsIgnoreCase("4")) {
             u.getAccountList().get(acc).viewTransactionHistory();
+            System.out.println("--------------------");
         }
         else if (command.equalsIgnoreCase("delete") || command.equalsIgnoreCase("5")) {
-            if (u.getAccountList().get(acc).deleteAccount()) service.deleteUser(u);
+            u.deleteAccount(acc);
         }
 
         return u;
