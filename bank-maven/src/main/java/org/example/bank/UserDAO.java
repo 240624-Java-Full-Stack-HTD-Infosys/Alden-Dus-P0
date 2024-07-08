@@ -13,13 +13,14 @@ public class UserDAO {
         try {
             Connection connection = ConnectionUtil.getConnection();
             //Write SQL logic here
-            String sql = "INSERT INTO users (fullname, username, email, pass) VALUES(?,?,?,?)";
+            String sql = "INSERT INTO users (firstname, lastname, username, email, pass) VALUES(?,?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-            preparedStatement.setString(1,u.getName());
-            preparedStatement.setString(2,u.getUsername());
-            preparedStatement.setString(3,u.getEmail());
-            preparedStatement.setString(4,u.getPassword());
+            preparedStatement.setString(1,u.getFirstName());
+            preparedStatement.setString(2,u.getLastName());
+            preparedStatement.setString(3,u.getUsername());
+            preparedStatement.setString(4,u.getEmail());
+            preparedStatement.setString(5,u.getPassword());
 
             preparedStatement.executeUpdate();
 
@@ -37,7 +38,7 @@ public class UserDAO {
             ResultSet rs = preparedStatement.executeQuery();
 
             while(rs.next()){
-                User u = new User(rs.getInt("user_id"),rs.getString("fullname"),rs.getString("email"), rs.getString("username"), rs.getString("pass"));
+                User u = new User(rs.getInt("user_id"),rs.getString("firstname"),rs.getString("lastname"),rs.getString("email"), rs.getString("username"), rs.getString("pass"));
                 //set accounts
                 u.setAccountList();
 
@@ -61,7 +62,7 @@ public class UserDAO {
             ResultSet rs = preparedStatement.executeQuery();
 
             while(rs.next()){
-                User u = new User(rs.getInt("user_id"),rs.getString("fullname"),rs.getString("email"), rs.getString("username"), rs.getString("pass"));
+                User u = new User(rs.getInt("user_id"),rs.getString("firstname"),rs.getString("lastname"),rs.getString("email"), rs.getString("username"), rs.getString("pass"));
                 //set accounts
                 u.setAccountList();
 
@@ -80,7 +81,7 @@ public class UserDAO {
             ResultSet rs = preparedStatement.executeQuery();
 
             while(rs.next()){
-                User u = new User(rs.getInt("user_id"),rs.getString("fullname"),rs.getString("email"), rs.getString("username"), rs.getString("pass"));
+                User u = new User(rs.getInt("user_id"),rs.getString("firstname"),rs.getString("lastname"),rs.getString("email"), rs.getString("username"), rs.getString("pass"));
                 //set accounts
                 u.setAccountList();
 
@@ -112,14 +113,15 @@ public class UserDAO {
         try  {
             Connection connection = ConnectionUtil.getConnection();
             //Write SQL logic here
-            String sql = "UPDATE users SET fullname=?, username=?, email=?, pass=? WHERE user_id=?";
+            String sql = "UPDATE users SET firstname=?,lastname=?, username=?, email=?, pass=? WHERE user_id=?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-            preparedStatement.setString(1,u.getName());
-            preparedStatement.setString(2,u.getUsername());
-            preparedStatement.setString(3,u.getEmail());
-            preparedStatement.setString(4,u.getPassword());
-            preparedStatement.setInt(5,u.getUserID());
+            preparedStatement.setString(1,u.getFirstName());
+            preparedStatement.setString(2,u.getLastName());
+            preparedStatement.setString(3,u.getUsername());
+            preparedStatement.setString(4,u.getEmail());
+            preparedStatement.setString(5,u.getPassword());
+            preparedStatement.setInt(6,u.getUserID());
 
             preparedStatement.executeUpdate();
 
@@ -153,7 +155,7 @@ public class UserDAO {
             ResultSet rs = preparedStatement.executeQuery();
 
             while(rs.next()){
-                User u = new User(rs.getInt("user_id"),rs.getString("fullname"),rs.getString("email"), rs.getString("username"), rs.getString("pass"));
+                User u = new User(rs.getInt("user_id"),rs.getString("firstname"),rs.getString("lastname"),rs.getString("email"), rs.getString("username"), rs.getString("pass"));
                 //set accounts
                 u.setAccountList();
 

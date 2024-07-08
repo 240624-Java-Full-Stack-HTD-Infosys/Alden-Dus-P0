@@ -42,8 +42,11 @@ public class Main {
 
     public static User register(ServiceUser service) {
         Scanner scan = new Scanner(System.in);
-        System.out.println("Enter name");
-        String name = scan.nextLine();
+        System.out.println("Enter first name");
+        String first = scan.nextLine();
+
+        System.out.println("Enter last name");
+        String last = scan.nextLine();
 
         System.out.println("Enter Email");
         String email = scan.nextLine();
@@ -54,7 +57,7 @@ public class Main {
         System.out.println("Enter Password");
         String password = scan.nextLine();
 
-        return service.createUser(name, email, username, password);
+        return service.createUser(first, last, email, username, password);
     }
 
     public static User login(ServiceUser service) {
@@ -89,33 +92,40 @@ public class Main {
     }
 
     public static User updateInfo(ServiceUser service, User u) {
-        System.out.println("What do you want to update? 'name' (or 1), 'email' (or 2), 'username' (or 3), or 'password' (or 4)");
+        System.out.println("What do you want to update? 'firstname' (or 1), 'lastname' (or 2), 'email' (or 3), 'username' (or 4), or 'password' (or 5)");
 
         Scanner scan = new Scanner(System.in);
         String command = scan.nextLine();
 
-        if (command.equalsIgnoreCase("name") || command.equalsIgnoreCase("1")) {
+        if (command.equalsIgnoreCase("firstname") || command.equalsIgnoreCase("1")) {
             System.out.println("Enter you new name: ");
             String name = scan.nextLine();
 
-            u.setName(name);
+            u.setFirstName(name);
             service.updateUser(u);
         }
-        else if (command.equalsIgnoreCase("email") || command.equalsIgnoreCase("2")) {
+        if (command.equalsIgnoreCase("lastname") || command.equalsIgnoreCase("2")) {
+            System.out.println("Enter you new name: ");
+            String name = scan.nextLine();
+
+            u.setLastName(name);
+            service.updateUser(u);
+        }
+        else if (command.equalsIgnoreCase("email") || command.equalsIgnoreCase("3")) {
             System.out.println("Enter you new email: ");
             String email = scan.nextLine();
 
             u.setEmail(email);
             service.updateUser(u);
         }
-        else if (command.equalsIgnoreCase("username") || command.equalsIgnoreCase("3")) {
+        else if (command.equalsIgnoreCase("username") || command.equalsIgnoreCase("4")) {
             System.out.println("Enter you new username: ");
             String username = scan.nextLine();
 
             u.setUsername(username);
             service.updateUser(u);
         }
-        else if (command.equalsIgnoreCase("password") || command.equalsIgnoreCase("4")) {
+        else if (command.equalsIgnoreCase("password") || command.equalsIgnoreCase("5")) {
             System.out.println("Enter you new password: ");
             String password = scan.nextLine();
 

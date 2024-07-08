@@ -8,22 +8,25 @@ public class User {
     List<BankAccount> accountList = new ArrayList<>();
 
     //Username, password, id, and email
-    String name;
+    String firstname;
+    String lastname;
     String username;
     String password;
     String email;
     int userID;
 
-    User(String name, String email, String username, String password) {
+    User(String firstname,String lastname, String email, String username, String password) {
         //The DB will make this as the primary key... TODO
-        this.name = name;
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.username = username;
         this.password = password;
         this.email = email;
     }
-    public User(int id, String name, String email, String username, String password) {
+    public User(int id, String firstname,String lastname, String email, String username, String password) {
         this.userID = id;
-        this.name = name;
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.username = username;
         this.password = password;
         this.email = email;
@@ -74,12 +77,20 @@ public class User {
         this.accountList = accList;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String name) {
+        this.firstname = name;
+    }
+
+    public String getLastName() {
+        return lastname;
+    }
+
+    public void setLastName(String name) {
+        this.lastname = name;
     }
 
     public String getUsername() {

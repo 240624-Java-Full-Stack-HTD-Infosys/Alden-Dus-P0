@@ -18,8 +18,8 @@ public class ServiceUser {
         else return null;
     }
 
-    public User createUser(String name, String email, String username, String password) {
-        User newUser = new User(name, email, username, password);
+    public User createUser(String firstname, String lastname, String email, String username, String password) {
+        User newUser = new User(firstname, lastname, email, username, password);
         dao.addUser(newUser);
 
         return newUser;

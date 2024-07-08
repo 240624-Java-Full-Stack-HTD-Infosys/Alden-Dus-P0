@@ -21,8 +21,8 @@ public class TestDriver {
     @Test
     public void test_createUsers() {
         //Arrange
-        service.createUser("TestUser1", "test@revature.com", "I-Test", "Password");
-        service.createUser("TestUser2", "test2@revature.com", "I-Test2", "Password");
+        service.createUser("Test","User1",  "test@revature.com", "I-Test", "Password");
+        service.createUser("Test","User2",  "test2@revature.com", "I-Test2", "Password");
         int expected_users = 2;
 
         //Activate
@@ -36,8 +36,8 @@ public class TestDriver {
     @Test
     public void test_findUsers() {
         //Arrange
-        service.createUser("TestUser1", "test@revature.com", "I-Test", "Password");
-        service.createUser("TestUser2", "test2@revature.com", "I-Test2", "Password");
+        service.createUser("Test","User1",  "test@revature.com", "I-Test", "Password");
+        service.createUser("Test","User2",  "test2@revature.com", "I-Test2", "Password");
         String expected_username = "I-Test";
         String expected_password = "Password";
 
@@ -55,7 +55,7 @@ public class TestDriver {
     @Test
     public void test_createAccounts() {
         //Arrange
-        service.createUser("TestUser1", "test@revature.com", "I-Test", "Password");
+        service.createUser("Test","User1", "test@revature.com", "I-Test", "Password");
         int expected_accounts = 3;
 
         //Activate
@@ -77,7 +77,7 @@ public class TestDriver {
     @Test
     public void test_DepositAndWithdraw() {
         //Arrange
-        service.createUser("TestUser1", "test@revature.com", "I-Test", "Password");
+        service.createUser("Test","User1", "test@revature.com", "I-Test", "Password");
         int expected_balance = 111;
 
         //Activate
@@ -100,7 +100,7 @@ public class TestDriver {
     @Test
     public void test_transfers() {
         //Arrange
-        service.createUser("TestUser1", "test@revature.com", "I-Test", "Password");
+        service.createUser("Test","User1" , "test@revature.com", "I-Test", "Password");
         int expected_balance_acc0 = 544;
         int expected_balance_acc1 = 456;
 
