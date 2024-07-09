@@ -25,3 +25,4 @@ replay_pid*
 
 *.properties
 ignore/
+node_modules/

@@ -1,0 +1,334 @@
+<head>
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+</head>
+<body>
+
+	<div id="login">
+
+		<p>Enter Username or Email</p>
+		<input id="username" /> <br />
+
+		<p>Enter Password</p>
+		<input type="password" id="password" /><br />
+
+		<button onclick="login()">Login</button><button onclick="registerPage()">Register instead</button>
+
+	</div>
+
+	<div id="register" hidden>
+
+		<p>Enter first name</p>
+		<input id="firstname-reg" /> <br />
+
+		<p>Enter last name</p>
+		<input id="lastname-reg" /> <br />
+
+		<p>Enter email</p>
+		<input id="email-reg" /> <br />
+
+		<p>Enter Username</p>
+		<input id="username-reg" /> <br />
+
+		<p>Enter Password</p>
+		<input type="password" id="password-reg" /><br />
+
+		<button onclick="loginPage()">Return to Login</button><button onclick="register()">Register</button>
+
+	</div>
+
+	<div id="updatepage" hidden>
+
+		<p>Enter first name</p>
+		<input id="firstname-upd" /> <br />
+
+		<p>Enter last name</p>
+		<input id="lastname-upd" /> <br />
+
+		<p>Enter email</p>
+		<input id="email-upd" /> <br />
+
+		<p>Enter Username</p>
+		<input id="username-upd" /> <br />
+
+		<p>Enter Password</p>
+		<input type="password" id="password-upd" /><br />
+
+		<button onclick="returnToUserPage()">Nevermind</button><button onclick="update()">update</button>
+
+	</div>
+
+	<div id="userpage" hidden>
+
+		<h3 id="welcome"></h3>
+
+		<button onclick="updatePage()">Update User Info</button>
+		<button onclick="addAccountChecking()">Add New Checking Account</button>
+		<button onclick="addAccountCredit()">Add New Credit Account</button>
+
+	</div>
+
+	<div id="accountpage" hidden>
+
+		<h3 id="accountinfo"></h3>
+		<p>Enter $ amount:</p>
+		<input id="transactionAmount" /><br />
+		<button onclick="deposit()">Deposit amount</button><br />
+		<button onclick="withdraw()">Withdraw amount</button><br />
+		<button onclick="transfer()">Transfer amount to =></button> <input id="transferto" /><br />
+		<button onclick="viewHistory()">View Transaction History</button><br />
+		<button onclick="deleteAccount()">Delete account</button><br />
+		<br />
+		<button onclick="returnToUserPage()">back</button><br />
+
+	</div>
+
+	<script>
+
+		//socketio info
+		var socket = io();
+
+		var userID = "";
+		var username = "";
+		var email = "";
+		var firstname = "";
+		var lastname = "";
+		var password = "";
+		var accounts = [];
+		var actionAccount = -1;
+
+		//get results
+		socket.on('results', function (data) {
+			console.log(data);
+
+			if (data.type == "login") {
+				var info = data.data;
+				userID = info.userID;
+				username = info.username;
+				email = info.email;
+				firstname = info.firstName;
+				lastname = info.lastName;
+				password = info.password;
+
+
+				document.getElementById('login').style.display = "none";
+				document.getElementById('register').style.display = "none";
+                document.getElementById('update').style.display = "none";
+				document.getElementById('userpage').style.display = "block";
+
+				var welcomeString = "Welcome: " + firstname + " " + lastname + " to your bank!";
+				document.getElementById('welcome').innerText = welcomeString;
+
+
+				for (var i = 0; i < info.accountList.length; i++) {
+					accounts.push(info.accountList[i]);
+
+
+					if (accounts[i].checking) document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Checking</p>';
+					else document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Credit</p>';
+					document.getElementById('userpage').innerHTML += '<button onclick=viewAccount(' + i + ')> Account Actions </button>';
+
+
+				}
+
+			}
+
+			if (data.type == "balance") {
+				accounts[actionAccount].balance = data.data;
+				document.getElementById('accountinfo').innerText = 'Account Number: ' + accounts[actionAccount].accountID + ' Balance: $' + (accounts[actionAccount].balance / 100);
+			}
+
+			if (data.type == "login-failure") {
+				document.getElementById('login').innerHTML += '<p> Login failed: ' + data.data + '</p>'
+			}
+
+			if (data.type == "register-failure") {
+				document.getElementById('register').innerHTML += '<p> Login failed: ' + data.data + '</p>'
+			}
+
+            if (data.type == "update-failure") {
+                document.getElementById('updatepage').innerHTML += '<p> Login failed: ' + data.data + '</p>'
+            }
+
+			if (data.type == "account-create") {
+				accounts.push(data.data);
+
+				var i = accounts.length - 1;
+
+				if (accounts[i].checking) document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Checking</p>';
+				else document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Credit</p>';
+				document.getElementById('userpage').innerHTML += '<button onclick=viewAccount(' + i + ')> Account Actions </button>';
+
+			}
+
+			if (data.type == "history") {
+				var history = "";
+
+				for (var i = 0; i < data.data.length; i++) {
+					history += data.data[i] + "\n";
+				}
+				alert(history);
+			}
+
+			if (data.type == "delete") {
+				for (var i = 0; i < accounts.length; i++) {
+					if (accounts[i].accountID == data.data) accounts.splice(i, 1);
+				}
+				returnToUserPage();
+			}
+
+		});
+
+		//Login / Register functions
+		function login() {
+			data = {
+				command: "login",
+				username: document.getElementById('username').value,
+				password: document.getElementById('password').value
+			}
+			socket.emit('sendHTTP', data);
+
+		}
+
+		function registerPage() {
+			document.getElementById('login').style.display = "none";
+			document.getElementById('register').style.display = "block";
+		}
+
+		function loginPage() {
+			document.getElementById('register').style.display = "none";
+			document.getElementById('login').style.display = "block";
+		}
+
+		function register() {
+			data = {
+				command: "register",
+				firstname: document.getElementById('firstname-reg').value,
+				lastname: document.getElementById('lastname-reg').value,
+				email: document.getElementById('email-reg').value,
+				username: document.getElementById('username-reg').value,
+				password: document.getElementById('password-reg').value
+			}
+			socket.emit('sendHTTP', data);
+		}
+
+		//User Functions
+		function addAccountChecking() {
+			data = {
+				command: "checking",
+				userID: userID
+			}
+			socket.emit('sendHTTP', data);
+		}
+
+		function addAccountCredit() {
+			data = {
+				command: "credit",
+				userID: userID
+			}
+			socket.emit('sendHTTP', data);
+		}
+		function update() {
+            data = {
+				command: "update",
+				userID: userID,
+                firstname: document.getElementById('firstname-upd').value,
+                lastname: document.getElementById('lastname-upd').value,
+                email: document.getElementById('email-upd').value,
+                username: document.getElementById('username-upd').value,
+                password: document.getElementById('password-upd').value
+            }
+            socket.emit('sendHTTP', data);
+		}
+		//Account functions
+		function viewAccount(index) {
+			document.getElementById('userpage').style.display = "none";
+			document.getElementById('accountpage').style.display = "block";
+
+			actionAccount = index;
+			document.getElementById('accountinfo').innerText = 'Account Number: ' + accounts[index].accountID + ' Balance: $' + (accounts[index].balance / 100);
+		}
+		function deposit() {
+			var id = accounts[actionAccount].accountID;
+
+			data = {
+				command: "deposit",
+				account: id,
+				amount: document.getElementById('transactionAmount').value
+			}
+			socket.emit('sendHTTP', data);
+		}
+		function withdraw() {
+			var id = accounts[actionAccount].accountID;
+
+			data = {
+				command: "withdraw",
+				account: id,
+				amount: document.getElementById('transactionAmount').value
+			}
+			socket.emit('sendHTTP', data);
+		}
+		function transfer() {
+			var id = accounts[actionAccount].accountID;
+
+			data = {
+				command: "transfer",
+				account: id,
+				toid: document.getElementById('transferto').value,
+				amount: document.getElementById('transactionAmount').value
+			}
+			socket.emit('sendHTTP', data);
+		}
+		function viewHistory() {
+			var id = accounts[actionAccount].accountID;
+			data = {
+				command: "history",
+				account: id
+			}
+			socket.emit('sendHTTP', data);
+		}
+		function deleteAccount() {
+			var id = accounts[actionAccount].accountID;
+			data = {
+				command: "delete",
+				account: id
+			}
+			socket.emit('sendHTTP', data);
+		}
+		function returnToUserPage() {
+			actionAccount = -1;
+
+			document.getElementById('userpage').style.display = "block";
+			document.getElementById('accountpage').style.display = "none";
+            document.getElementById('updatepage').style.display = "none";
+
+			//reset page
+			document.getElementById('userpage').innerHTML = ' <h3 id="welcome"></h3><button onclick="updateInfo()">Update User Info</button><button onclick="addAccountChecking()">Add New Checking Account</button><button onclick="addAccountCredit()">Add New Credit Account</button>';
+
+			//Add page info
+			var welcomeString = "Welcome: " + firstname + " " + lastname + " to your bank!";
+			document.getElementById('welcome').innerText = welcomeString;
+
+			for (var i = 0; i < accounts.length; i++) {
+				if (accounts[i].checking) document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Checking</p>';
+				else document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Credit</p>';
+				document.getElementById('userpage').innerHTML += '<button onclick=viewAccount(' + i + ')> Account Actions </button>';
+			}
+
+		}
+
+		function updatePage() {
+            document.getElementById('userpage').style.display = "none";
+			document.getElementById('updatepage').style.display = "block";
+
+
+			document.getElementById('firstname-upd').value = firstname;
+			document.getElementById('lastname-upd').value = lastname;
+			document.getElementById('email-upd').value = email;
+			document.getElementById('username-upd').value = username;
+			document.getElementById('password-upd').value = password;
+
+		}
+
+	</script>
+
+</body>

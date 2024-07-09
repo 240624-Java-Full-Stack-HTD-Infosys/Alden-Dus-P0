@@ -22,7 +22,7 @@ public class ControllerREST {
                 UserDAO dao = new UserDAO();
                 ServiceUser service = new ServiceUser(dao);
                 if (service.findUser(user.getUsername()) == null) {
-                    User result = service.createUser(user.getFirstName(),user.getLastName(),user.getEmail(), user.getEmail(), user.getPassword());
+                    User result = service.createUser(user.getFirstName(),user.getLastName(),user.getEmail(), user.getUsername(), user.getPassword());
                     ctx.status(200);
                     ctx.json(result);
                 }
@@ -30,8 +30,29 @@ public class ControllerREST {
             } else ctx.status(400);
         });
 
+        app.post("update", ctx -> {
+            String jsonString=ctx.body();
+            ObjectMapper objm=new ObjectMapper();
+            User user = objm.readValue(jsonString,User.class);
+
+            if (user.getPassword().length() >= 4 && user.getUsername().length() > 0) {
+                UserDAO dao = new UserDAO();
+                ServiceUser service = new ServiceUser(dao);
+                User existing = service.findUser(user.getUserID());
+
+                if (existing != null) {
+                    user.setUserID(existing.getUserID());
+                    service.updateUser(user);
+                    ctx.status(200);
+                    ctx.json(user);
+                }
+                else ctx.status(400);
+            } else ctx.status(400);
+        });
+
         app.post("login", ctx -> {
             String jsonString=ctx.body();
+
             ObjectMapper objm=new ObjectMapper();
             User user = objm.readValue(jsonString,User.class);
 
@@ -43,39 +64,36 @@ public class ControllerREST {
                 ctx.status(200);
                 ctx.json(toCheck);
             }
-            else ctx.status(401);
+            else {
+                ctx.status(401);
+                ctx.result("Credentials not found");
+            }
         });
 
-        app.post("checking-account", ctx -> {
-            String jsonString=ctx.body();
-            ObjectMapper objm=new ObjectMapper();
-            User user = objm.readValue(jsonString,User.class);
+        app.post("checking-account/{userID}", ctx -> {
+
+            int id = Integer.parseInt(ctx.pathParam("userID"));
+            User user = new User(id);
 
             AccountDAO dao = new AccountDAO();
             AccountService service = new AccountService(dao);
 
-            BankAccount a = new BankAccount(user.userID, BankAccount.AccountType.CHECKING);
-            int id = service.createAccount(a);
-
-            a.setID(id);
+            BankAccount a = user.makeCheckingAccount();
 
             ctx.status(200);
             ctx.json(a);
 
         });
 
-        app.post("credit-account", ctx -> {
-            String jsonString=ctx.body();
-            ObjectMapper objm=new ObjectMapper();
-            User user = objm.readValue(jsonString,User.class);
+        app.post("credit-account/{userID}", ctx -> {
+
+            int id = Integer.parseInt(ctx.pathParam("userID"));
+            User user = new User(id);
 
             AccountDAO dao = new AccountDAO();
             AccountService service = new AccountService(dao);
 
-            BankAccount a = new BankAccount(user.userID, BankAccount.AccountType.CREDIT);
-            int id = service.createAccount(a);
-
-            a.setID(id);
+            BankAccount a = user.makeCreditAccount();
 
             ctx.status(200);
             ctx.json(a);
@@ -83,6 +101,7 @@ public class ControllerREST {
         });
 
         app.post("/account/{accountID}/deposit/{amount}", ctx -> {
+
             int id = Integer.parseInt(ctx.pathParam("accountID"));
             int amount = (int)(Float.parseFloat(ctx.pathParam("amount")) * 100);
 
@@ -94,7 +113,7 @@ public class ControllerREST {
             a.deposit(amount);
 
             ctx.status(200);
-
+            ctx.result(Integer.toString(a.getBalance()));
         });
 
         app.post("/account/{accountID}/withdraw/{amount}", ctx -> {
@@ -108,7 +127,7 @@ public class ControllerREST {
             a.withdraw(amount);
 
             ctx.status(200);
-
+            ctx.result(Integer.toString(a.getBalance()));
         });
 
         app.post("/account/{accountID}/transfer/{amount}/{transferToID}", ctx -> {
@@ -124,19 +143,7 @@ public class ControllerREST {
             a.transfer(amount, other);
 
             ctx.status(200);
-
-        });
-
-        app.get("/account/{accountID}", ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("accountID"));
-
-            AccountDAO dao = new AccountDAO();
-            AccountService service = new AccountService(dao);
-
-            BankAccount a = service.findAccount(id);
-
-            ctx.json(a);
-
+            ctx.result(Integer.toString(a.getBalance()));
         });
 
         app.get("/account/{accountID}/history", ctx -> {
@@ -169,6 +176,7 @@ public class ControllerREST {
             if (a.deleteAccount()) {
                 service.deleteAccount(a);
                 ctx.status(200);
+                ctx.json(a);
             }
             else ctx.status(400);
 

@@ -1,5 +1,7 @@
 package org.example.bank;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 public class User {
@@ -23,7 +25,7 @@ public class User {
         this.password = password;
         this.email = email;
     }
-    public User(int id, String firstname,String lastname, String email, String username, String password) {
+    public User(int id, String firstname, String lastname, String email, String username, String password) {
         this.userID = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -31,7 +33,18 @@ public class User {
         this.password = password;
         this.email = email;
     }
-    public void makeCheckingAccount() {
+    public User(int userID) {
+        this.userID = userID;
+    }
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+    public User() {
+
+    }
+
+    public BankAccount makeCheckingAccount() {
         BankAccount newAccount = new BankAccount(userID, BankAccount.AccountType.CHECKING);
 
         AccountDAO accountDAO = new AccountDAO();
@@ -43,9 +56,11 @@ public class User {
         System.out.println("id: " + newAccount.getAccountID());
 
         accountList.add(newAccount);
+
+        return newAccount;
     }
 
-    public void makeCreditAccount() {
+    public BankAccount makeCreditAccount() {
         BankAccount newAccount = new BankAccount(userID, BankAccount.AccountType.CREDIT);
 
         AccountDAO accountDAO = new AccountDAO();
@@ -55,6 +70,8 @@ public class User {
         newAccount.setID(id);
 
         accountList.add(newAccount);
+
+        return newAccount;
     }
 
     public BankAccount accessAccount(int i) {
@@ -81,6 +98,7 @@ public class User {
         return firstname;
     }
 
+    @JsonProperty("firstName")
     public void setFirstName(String name) {
         this.firstname = name;
     }
@@ -89,6 +107,7 @@ public class User {
         return lastname;
     }
 
+    @JsonProperty("lastName")
     public void setLastName(String name) {
         this.lastname = name;
     }
@@ -97,6 +116,7 @@ public class User {
         return username;
     }
 
+    @JsonProperty("username")
     public void setUsername(String username) {
         this.username = username;
     }
@@ -105,6 +125,7 @@ public class User {
         return password;
     }
 
+    @JsonProperty("password")
     public void setPassword(String password) {
         this.password = password;
     }
@@ -113,6 +134,7 @@ public class User {
         return email;
     }
 
+    @JsonProperty("email")
     public void setEmail(String email) {
         this.email = email;
     }
