@@ -1,9 +1,10 @@
 <head>
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<link href="/img/style.css" rel="stylesheet">
 </head>
 <body>
 
-	<div id="login">
+	<div class="page" id="login">
 
 		<p>Enter Username or Email</p>
 		<input id="username" /> <br />
@@ -11,11 +12,11 @@
 		<p>Enter Password</p>
 		<input type="password" id="password" /><br />
 
-		<button onclick="login()">Login</button><button onclick="registerPage()">Register instead</button>
+		<button onclick="login()">Login</button><button onclick="registerPage()">Register</button>
 
 	</div>
 
-	<div id="register" hidden>
+	<div class="page" id="register" hidden>
 
 		<p>Enter first name</p>
 		<input id="firstname-reg" /> <br />
@@ -36,7 +37,7 @@
 
 	</div>
 
-	<div id="updatepage" hidden>
+	<div class="page" id="updatepage" hidden>
 
 		<p>Enter first name</p>
 		<input id="firstname-upd" /> <br />
@@ -53,11 +54,11 @@
 		<p>Enter Password</p>
 		<input type="password" id="password-upd" /><br />
 
-		<button onclick="returnToUserPage()">Nevermind</button><button onclick="update()">update</button>
+		<button onclick="returnToUserPage()">Return to User</button><button onclick="update()">Update</button>
 
 	</div>
 
-	<div id="userpage" hidden>
+	<div class="page" id="userpage" hidden>
 
 		<h3 id="welcome"></h3>
 
@@ -65,18 +66,22 @@
 		<button onclick="addAccountChecking()">Add New Checking Account</button>
 		<button onclick="addAccountCredit()">Add New Credit Account</button>
 
+		<br /><br />
+
 	</div>
 
-	<div id="accountpage" hidden>
+	<div class="page" id="accountpage" hidden>
 
 		<h3 id="accountinfo"></h3>
 		<p>Enter $ amount:</p>
 		<input id="transactionAmount" /><br />
-		<button onclick="deposit()">Deposit amount</button><br />
+		<button onclick="deposit()">Deposit amount</button>
 		<button onclick="withdraw()">Withdraw amount</button><br />
-		<button onclick="transfer()">Transfer amount to =></button> <input id="transferto" /><br />
-		<button onclick="viewHistory()">View Transaction History</button><br />
+
+		<button onclick="viewHistory()">View Transaction History</button>
 		<button onclick="deleteAccount()">Delete account</button><br />
+		<br />
+		<button onclick="transfer()">Transfer amount to: </button> <input id="transferto" /><br />
 		<br />
 		<button onclick="returnToUserPage()">back</button><br />
 
@@ -112,7 +117,7 @@
 
 				document.getElementById('login').style.display = "none";
 				document.getElementById('register').style.display = "none";
-                document.getElementById('update').style.display = "none";
+                document.getElementById('updatepage').style.display = "none";
 				document.getElementById('userpage').style.display = "block";
 
 				var welcomeString = "Welcome: " + firstname + " " + lastname + " to your bank!";
@@ -125,7 +130,7 @@
 
 					if (accounts[i].checking) document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Checking</p>';
 					else document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Credit</p>';
-					document.getElementById('userpage').innerHTML += '<button onclick=viewAccount(' + i + ')> Account Actions </button>';
+                    document.getElementById('userpage').innerHTML += '<button onclick=viewAccount(' + i + ')> Account Actions </button> <br/> <br/>';
 
 
 				}
@@ -311,7 +316,7 @@
 			for (var i = 0; i < accounts.length; i++) {
 				if (accounts[i].checking) document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Checking</p>';
 				else document.getElementById('userpage').innerHTML += '<p> Account Number: ' + accounts[i].accountID + ' Balance: $' + (accounts[i].balance / 100) + ' TYPE: Credit</p>';
-				document.getElementById('userpage').innerHTML += '<button onclick=viewAccount(' + i + ')> Account Actions </button>';
+                document.getElementById('userpage').innerHTML += '<button onclick=viewAccount(' + i + ')> Account Actions </button> <br/> <br/>';
 			}
 
 		}
