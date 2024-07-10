@@ -51,7 +51,7 @@ public class BankAccount {
                 if (amount <= balance + creditLimit) {
                     balance -= amount;
 
-                    addTransaction(new Transaction(accountID, "Withdrew $" + (float)amount/100 + " into account " + accountID));
+                    addTransaction(new Transaction(accountID, -amount, "Withdrew $" + (float)amount/100 + " into account " + accountID));
 
                     AccountDAO dao = new AccountDAO();
                     AccountService service = new AccountService(dao);
@@ -69,7 +69,7 @@ public class BankAccount {
                 if (amount <= balance) {
                     balance -= amount;
 
-                    addTransaction(new Transaction(accountID, "Withdrew $" + (float)amount/100 + " out of account " + accountID));
+                    addTransaction(new Transaction(accountID, -amount, "Withdrew $" + (float)amount/100 + " out of account " + accountID));
 
                     AccountDAO dao = new AccountDAO();
                     AccountService service = new AccountService(dao);
@@ -91,7 +91,7 @@ public class BankAccount {
     public int deposit(int amount) {
         balance += amount;
 
-        addTransaction(new Transaction(accountID, "Deposited $" + (float)amount/100 + " into account " + accountID));
+        addTransaction(new Transaction(accountID, amount, "Deposited $" + (float)amount/100 + " into account " + accountID));
 
         AccountDAO dao = new AccountDAO();
         AccountService service = new AccountService(dao);
@@ -108,7 +108,7 @@ public class BankAccount {
             other.deposit(amount);
 
             //Log it
-            addTransaction(new Transaction(accountID, "Transfered " + (float)amount/100 + " from account: " + accountID + " to " + other.getAccountID()));
+            addTransaction(new Transaction(accountID, -amount, "Transfered " + (float)amount/100 + " from account: " + accountID + " to " + other.getAccountID()));
         }
         else {
             System.out.printf("Balance too low to transfer");

@@ -22,7 +22,7 @@ public class TransactionDAO {
             ResultSet rs = preparedStatement.executeQuery();
 
             while(rs.next()){
-                Transaction t = new Transaction(rs.getInt("transaction_id"),rs.getInt("account"), rs.getString("history"));
+                Transaction t = new Transaction(rs.getInt("transaction_id"),rs.getInt("account"),rs.getInt("netgain"), rs.getString("history"));
                 transactions.add(t);
             }
 
@@ -38,10 +38,11 @@ public class TransactionDAO {
         try {
             Connection connection = ConnectionUtil.getConnection();
             //Write SQL logic here
-            String sql = "INSERT INTO transactions (account,history) VALUES(?,?)";
+            String sql = "INSERT INTO transactions (account,netgain,history) VALUES(?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1,t.getAccountID());
-            preparedStatement.setString(2,t.toString());
+            preparedStatement.setInt(2,t.getNetgain());
+            preparedStatement.setString(3,t.toString());
 
             preparedStatement.executeUpdate();
 

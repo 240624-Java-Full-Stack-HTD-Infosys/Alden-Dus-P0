@@ -71,6 +71,9 @@ io.sockets.on('connection', function(socket){
 		if (data.command == "delete") {
 			deleteAccount(socket,data.account);
 		}
+		if (data.command == "graph") {
+			getGraph(socket, data.account);
+		}
 
     });
 
@@ -272,6 +275,21 @@ async function getHistory(socket, account) {
 
 		const json = await response.json();
 		socket.emit('results', { type: "history", data: json });
+	} catch (error) {
+		console.error(error.message);
+	}
+}
+
+async function getGraph(socket, account) {
+	const url = "http://localhost:8080/account/" + account + "/graph";
+	try {
+		const response = await fetch(url);
+		if (!response.ok) {
+			throw new Error(`Response status: ${response.status}`);
+		}
+
+		const json = await response.json();
+		socket.emit('results', { type: "graph", data: json });
 	} catch (error) {
 		console.error(error.message);
 	}

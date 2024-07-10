@@ -165,6 +165,25 @@ public class ControllerREST {
 
         });
 
+        app.get("/account/{accountID}/graph", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("accountID"));
+
+            TransactionDAO dao = new TransactionDAO();
+            TransactionService service = new TransactionService(dao);
+
+            List<Transaction> list = service.findTransactionsByAccount(id);
+
+            List<Integer> toReturn = new ArrayList<>();
+
+            for (int i = 0; i < list.size(); i++) {
+                toReturn.add(list.get(i).getNetgain());
+            }
+
+            ctx.status(200);
+            ctx.json(toReturn);
+
+        });
+
         app.delete("/account/{accountID}", ctx -> {
             int id = Integer.parseInt(ctx.pathParam("accountID"));
 

@@ -5,13 +5,16 @@ public class Transaction {
     String history;
     int transactionID;
     int account_id;
+    int netgain;
 
-    public Transaction(int account_id, String history) {
+    public Transaction(int account_id, int netgain, String history) {
         this.account_id = account_id;
+        this.netgain = netgain;
         this.history = history;
     }
-    public Transaction(int id, int account_id, String history) {
+    public Transaction(int id, int account_id, int netgain, String history) {
         this.transactionID = id;
+        this.netgain = netgain;
         this.account_id = account_id;
         this.history = history;
     }
@@ -35,4 +38,6 @@ public class Transaction {
     public void setAccountID(int accountID) {
         this.account_id = accountID;
     }
+
+    public int getNetgain() {return netgain; }
 }

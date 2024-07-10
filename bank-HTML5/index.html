@@ -5,7 +5,8 @@
 <body>
 
 	<div class="page" id="login">
-
+		<img src="/img/logo.png" alt="Logo"> <br /><br />
+		
 		<p>Enter Username or Email</p>
 		<input id="username" /> <br />
 
@@ -17,6 +18,7 @@
 	</div>
 
 	<div class="page" id="register" hidden>
+		<img src="/img/logo.png" alt="Logo"> <br /><br />
 
 		<p>Enter first name</p>
 		<input id="firstname-reg" /> <br />
@@ -38,7 +40,8 @@
 	</div>
 
 	<div class="page" id="updatepage" hidden>
-
+		<img src="/img/logo.png" alt="Logo"> <br /><br />
+		
 		<p>Enter first name</p>
 		<input id="firstname-upd" /> <br />
 
@@ -59,6 +62,7 @@
 	</div>
 
 	<div class="page" id="userpage" hidden>
+		<img src="/img/logo.png" alt="Logo"> <br /><br />
 
 		<h3 id="welcome"></h3>
 
@@ -71,6 +75,7 @@
 	</div>
 
 	<div class="page" id="accountpage" hidden>
+		<img src="/img/logo.png" alt="Logo"> <br /><br />
 
 		<h3 id="accountinfo"></h3>
 		<p>Enter $ amount:</p>
@@ -84,6 +89,8 @@
 		<button onclick="transfer()">Transfer amount to: </button> <input id="transferto" /><br />
 		<br />
 		<button onclick="returnToUserPage()">back</button><br />
+		
+		<canvas id="graph" height="256" width="512"> </canvas>
 
 	</div>
 
@@ -91,15 +98,23 @@
 
 		//socketio info
 		var socket = io();
-
+		
+		//Canvas info
+		const canvas = document.getElementById("graph");
+		const ctx = canvas.getContext("2d");
+		
+		//User info
 		var userID = "";
 		var username = "";
 		var email = "";
 		var firstname = "";
 		var lastname = "";
 		var password = "";
+		
+		//Account info
 		var accounts = [];
 		var actionAccount = -1;
+		
 
 		//get results
 		socket.on('results', function (data) {
@@ -140,6 +155,7 @@
 			if (data.type == "balance") {
 				accounts[actionAccount].balance = data.data;
 				document.getElementById('accountinfo').innerText = 'Account Number: ' + accounts[actionAccount].accountID + ' Balance: $' + (accounts[actionAccount].balance / 100);
+				getGraph();
 			}
 
 			if (data.type == "login-failure") {
@@ -172,6 +188,27 @@
 					history += data.data[i] + "\n";
 				}
 				alert(history);
+			}
+
+			if (data.type == "graph") {
+				ctx.clearRect(0,0,512,256);
+				var graphBal = 0;
+				
+				for (var i = 0; i < data.data.length; i++) {
+				
+					graphBal += data.data[i];
+				
+					var x = i*16;
+					var y = 256/3;
+					
+					var size = -(graphBal/200000) * 256;
+					
+					if (data.data[i] > 0) ctx.fillStyle = "green";
+					else ctx.fillStyle = "red";
+					
+					ctx.fillRect(x,y,8,size);
+					
+				}
 			}
 
 			if (data.type == "delete") {
@@ -251,6 +288,14 @@
 
 			actionAccount = index;
 			document.getElementById('accountinfo').innerText = 'Account Number: ' + accounts[index].accountID + ' Balance: $' + (accounts[index].balance / 100);
+			
+			
+			var id = accounts[actionAccount].accountID;
+			data = {
+				command: "graph",
+				account: id
+			}
+			socket.emit('sendHTTP', data);
 		}
 		function deposit() {
 			var id = accounts[actionAccount].accountID;
@@ -291,6 +336,18 @@
 			}
 			socket.emit('sendHTTP', data);
 		}
+		
+		function getGraph() {
+		
+			var id = accounts[actionAccount].accountID;
+			data = {
+				command: "graph",
+				account: id
+			}
+			socket.emit('sendHTTP', data);
+			
+		}
+		
 		function deleteAccount() {
 			var id = accounts[actionAccount].accountID;
 			data = {
