@@ -74,6 +74,12 @@ io.sockets.on('connection', function(socket){
 		if (data.command == "graph") {
 			getGraph(socket, data.account);
 		}
+		if (data.command == "enter stock") {
+			enterStock(socket,data.account, data.amount);
+		}
+		if (data.command == "exit stock") {
+			exitStock(socket,data.account, data.amount);
+		}
 
     });
 
@@ -311,6 +317,44 @@ async function deleteAccount(socket, account) {
 
 		const json = await response.json();
 		socket.emit('results', { type: "delete", data: account });
+	} catch (error) {
+		console.error(error.message);
+	}
+}
+
+async function enterStock(socket, account, amount) {
+
+	const url = "http://localhost:8080/stock/" + account + "/" + amount;
+
+	const requestOptions = {
+		method: 'POST',
+	};
+
+	try {
+		const response = await fetch(url, requestOptions);
+		if (!response.ok) {
+			throw new Error(`Response status: ${response.status}`);
+		}
+
+		const json = await response.json();
+		socket.emit('results', { type: "balance", data: json });
+	} catch (error) {
+		console.error(error.message);
+	}
+}
+
+async function exitStock(socket, account, amount) {
+
+	const url = "http://localhost:8080/stock/" + account + "/" + amount;
+
+	try {
+		const response = await fetch(url);
+		if (!response.ok) {
+			throw new Error(`Response status: ${response.status}`);
+		}
+
+		const json = await response.json();
+		socket.emit('results', { type: "balance", data: json });
 	} catch (error) {
 		console.error(error.message);
 	}

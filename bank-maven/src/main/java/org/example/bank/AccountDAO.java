@@ -75,7 +75,32 @@ public class AccountDAO {
                 BankAccount.AccountType t = BankAccount.AccountType.CREDIT;
                 if (rs.getBoolean("ischecking")) t = BankAccount.AccountType.CHECKING;
                 BankAccount a = new BankAccount(rs.getInt("account_id"),rs.getInt("account_owner"),rs.getInt("balance"), t);
-                //TODO: Add Transactions
+                a.setTransactionList();
+
+                accounts.add(a);
+            }
+
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+
+        return accounts;
+    }
+
+    List<BankAccount> findAllAccounts() {
+        List<BankAccount> accounts = new ArrayList<>();
+        try {
+            Connection connection = ConnectionUtil.getConnection();
+
+            //Write SQL logic here
+            String sql = "SELECT * FROM accounts";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while(rs.next()){
+                BankAccount.AccountType t = BankAccount.AccountType.CREDIT;
+                if (rs.getBoolean("ischecking")) t = BankAccount.AccountType.CHECKING;
+                BankAccount a = new BankAccount(rs.getInt("account_id"),rs.getInt("account_owner"),rs.getInt("balance"), t);
                 a.setTransactionList();
 
                 accounts.add(a);

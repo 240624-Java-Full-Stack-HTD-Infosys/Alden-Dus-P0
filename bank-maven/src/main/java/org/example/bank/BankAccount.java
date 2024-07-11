@@ -101,8 +101,33 @@ public class BankAccount {
         return balance;
     }
 
+    public void enterStock(int amount) {
+        balance -= amount;
+
+        addTransaction(new Transaction(accountID, -amount, "You entered $" + (float)amount/100 + " into the stock market from account " + accountID));
+
+        AccountDAO dao = new AccountDAO();
+        AccountService service = new AccountService(dao);
+
+        service.updateAccount(this);
+
+    }
+
+    public int exitStock(int amount) {
+        balance += amount;
+
+        addTransaction(new Transaction(accountID, amount, "You took out $" + (float)amount/100 + " from the stock market into account " + accountID));
+
+        AccountDAO dao = new AccountDAO();
+        AccountService service = new AccountService(dao);
+
+        service.updateAccount(this);
+
+        return balance;
+    }
+
     public int transfer(int amount, BankAccount other) {
-        if (balance >= amount) {
+        if (balance >= amount || (balance + creditLimit >= amount && accountType == AccountType.CREDIT)) {
             //Complete transfer
             balance -= amount;
             other.deposit(amount);

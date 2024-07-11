@@ -51,10 +51,10 @@
 		<p>Enter email</p>
 		<input id="email-upd" /> <br />
 
-		<p>Enter Username</p>
+		<p>Enter Username (username must be atleast 1 character)</p>
 		<input id="username-upd" /> <br />
 
-		<p>Enter Password</p>
+		<p>Enter Password (password must be atleast 4 characters)</p>
 		<input type="password" id="password-upd" /><br />
 
 		<button onclick="returnToUserPage()">Return to User</button><button onclick="update()">Update</button>
@@ -88,6 +88,11 @@
 		<br />
 		<button onclick="transfer()">Transfer amount to: </button> <input id="transferto" /><br />
 		<br />
+		<br />
+		<br />
+		<button onclick="enterStockmarket()">Invest amount into stock market</button>
+		<button onclick="exitStockmarket()">Withdraw from stock market</button><br />
+		
 		<button onclick="returnToUserPage()">back</button><br />
 		
 		<canvas id="graph" height="256" width="512"> </canvas>
@@ -114,7 +119,10 @@
 		//Account info
 		var accounts = [];
 		var actionAccount = -1;
-		
+		var stockNumber = 0;
+		var stockFrames = 0;
+		var in_market = false;
+		var stock_invested;
 
 		//get results
 		socket.on('results', function (data) {
@@ -137,7 +145,6 @@
 
 				var welcomeString = "Welcome: " + firstname + " " + lastname + " to your bank!";
 				document.getElementById('welcome').innerText = welcomeString;
-
 
 				for (var i = 0; i < info.accountList.length; i++) {
 					accounts.push(info.accountList[i]);
@@ -194,20 +201,22 @@
 				ctx.clearRect(0,0,512,256);
 				var graphBal = 0;
 				
-				for (var i = 0; i < data.data.length; i++) {
-				
-					graphBal += data.data[i];
-				
-					var x = i*16;
-					var y = 256/3;
+				if (in_market == false) {
+					for (var i = 0; i < data.data.length; i++) {
 					
-					var size = -(graphBal/200000) * 256;
+						graphBal += data.data[i];
 					
-					if (data.data[i] > 0) ctx.fillStyle = "green";
-					else ctx.fillStyle = "red";
-					
-					ctx.fillRect(x,y,8,size);
-					
+						var x = i*16;
+						var y = 256/3;
+						
+						var size = -(graphBal/200000) * 256;
+						
+						if (data.data[i] > 0) ctx.fillStyle = "green";
+						else ctx.fillStyle = "red";
+						
+						ctx.fillRect(x,y,8,size);
+						
+					}
 				}
 			}
 
@@ -217,7 +226,6 @@
 				}
 				returnToUserPage();
 			}
-
 		});
 
 		//Login / Register functions
@@ -348,6 +356,38 @@
 			
 		}
 		
+		function enterStockmarket() {
+			if (!in_market) {
+				var id = accounts[actionAccount].accountID;
+				in_market = true;
+				stockNumber = 1;
+				stockFrames = 0;
+				ctx.clearRect(0,0,512,256);
+				stock_invested = document.getElementById('transactionAmount').value;
+				data = {
+					command: "enter stock",
+					account: id,
+					amount: document.getElementById('transactionAmount').value
+				}
+				socket.emit('sendHTTP', data);
+			}
+		}
+		
+		function exitStockmarket() {
+			if (in_market) {
+				var id = accounts[actionAccount].accountID;
+				in_market = false;
+				data = {
+					command: "exit stock",
+					account: id,
+					amount: stock_invested * (1 + (stockNumber/100))
+				}
+				stockNumber = 0;
+				stockFrames = 0;
+				socket.emit('sendHTTP', data);
+			}
+		}
+		
 		function deleteAccount() {
 			var id = accounts[actionAccount].accountID;
 			data = {
@@ -390,7 +430,33 @@
 			document.getElementById('password-upd').value = password;
 
 		}
-
+		
+		setInterval(function () {
+		
+			if (in_market) {
+				ctx.clearRect(0,0,512, 35);
+				ctx.fillText("Market shift: " + (1 + (stockNumber/100)) + "x ($" + (stock_invested * (1 + (stockNumber/100))) + ")", 10, 10);
+				
+				stockNumber += getRandomInt(5) - 2; //-2, -1, 0, 1, or 2
+			
+				var x = stockFrames*16;
+				var y = 256/3;
+				
+				var size = -(stockNumber) * 3;
+				if (stockNumber > 0) ctx.fillStyle = "green";
+				else ctx.fillStyle = "red";
+				
+				ctx.fillRect(x,y,8,size);
+				
+				stockFrames++;
+			}
+			
+		}, 1000);
+		
+		function getRandomInt(max) {
+			return Math.floor(Math.random() * max);
+		}
+		
 	</script>
 
 </body>

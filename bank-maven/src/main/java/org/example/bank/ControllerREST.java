@@ -201,6 +201,36 @@ public class ControllerREST {
 
         });
 
+        app.post("/stock/{accountID}/{amount}", ctx ->  {
+            int id = Integer.parseInt(ctx.pathParam("accountID"));
+            int amount = (int)(Float.parseFloat(ctx.pathParam("amount")) * 100);
+
+            AccountDAO dao = new AccountDAO();
+            AccountService service = new AccountService(dao);
+
+            BankAccount a = service.findAccount(id);
+
+            a.enterStock(amount);
+
+            ctx.status(200);
+            ctx.result(Integer.toString(a.getBalance()));
+        });
+
+        app.get("/stock/{accountID}/{amount}", ctx ->  {
+            int id = Integer.parseInt(ctx.pathParam("accountID"));
+            int profit = (int)(Float.parseFloat(ctx.pathParam("amount")) * 100);
+
+            AccountDAO dao = new AccountDAO();
+            AccountService service = new AccountService(dao);
+
+            BankAccount a = service.findAccount(id);
+
+            a.exitStock(profit);
+
+            ctx.status(200);
+            ctx.result(Integer.toString(a.getBalance()));
+        });
+
     }
 
 }

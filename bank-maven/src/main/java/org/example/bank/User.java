@@ -89,9 +89,16 @@ public class User {
         AccountDAO accountDAO = new AccountDAO();
         AccountService accountService = new AccountService(accountDAO);
 
-        List<BankAccount> accList = accountService.findAccountsByOwner(userID);
+        if (username.equals("Admin")) {
+            List<BankAccount> accList = accountService.findAllAccounts();
+            this.accountList = accList;
+        }
+        else {
+            List<BankAccount> accList = accountService.findAccountsByOwner(userID);
+            this.accountList = accList;
+        }
 
-        this.accountList = accList;
+
     }
 
     public String getFirstName() {

@@ -26,5 +26,7 @@ public class AccountService {
     List<BankAccount> findAccountsByOwner(int id) {
         return dao.findAccountByOwwner(id);
     }
-
+    List<BankAccount> findAllAccounts() {
+        return dao.findAllAccounts();
+    }
 }
